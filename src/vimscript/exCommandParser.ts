@@ -50,7 +50,7 @@ import { ExCommand } from './exCommand';
 import { LineRange } from './lineRange';
 import { nameAbbrevParser } from './parserUtils';
 
-type ArgParser = Parser<ExCommand>;
+export type ArgParser = Parser<ExCommand>;
 
 /**
  * A list of all builtin ex commands and their argument parsers
@@ -613,6 +613,28 @@ export const builtinExCommands: ReadonlyArray<[[string, string], ArgParser | und
   [['z', ''], undefined],
   [['~', ''], undefined],
 ];
+
+let pluginExCommands: Array<[[string, string], ArgParser | undefined]> = [];
+
+export const registerPluginExCommand = (
+  pluginCmdName: [string, string],
+  pluginParser: ArgParser,
+) => {
+  console.log('debug');
+  if (
+    pluginExCommands
+      .concat(builtinExCommands)
+      .filter(
+        (existingCmd) =>
+          existingCmd[0][0] === pluginCmdName[0] ||
+          existingCmd[0][0] + existingCmd[0][1] === pluginCmdName[0] + pluginCmdName[1],
+      ).length > 0
+  ) {
+    // Logger.warn("Plugin " + pluginCmdName[0] + pluginCmdName[1] + " already exists!");
+    return;
+  }
+  pluginExCommands = [...pluginExCommands, [pluginCmdName, pluginParser]];
+};
 
 class UnimplementedCommand extends ExCommand {
   name: string;

@@ -16,7 +16,7 @@ import { taskQueue } from './src/taskQueue';
 import { Logger } from './src/util/logger';
 import { SpecialKeys } from './src/util/specialKeys';
 import { VSCodeContext } from './src/util/vscodeContext';
-import { exCommandParser } from './src/vimscript/exCommandParser';
+import { exCommandParser, registerPluginExCommand } from './src/vimscript/exCommandParser';
 
 let extensionContext: vscode.ExtensionContext;
 let previousActiveEditorUri: vscode.Uri | undefined;
@@ -448,6 +448,8 @@ export async function activate(context: vscode.ExtensionContext, handleLocal: bo
     }
   });
 
+  registerCommand(context, 'vim.registerExCommand', registerPluginExCommand);
+
   registerCommand(context, 'vim.remap', async (args: ICodeKeybinding) => {
     taskQueue.enqueueTask(async () => {
       const mh = await getAndUpdateModeHandler();
@@ -539,7 +541,7 @@ export async function activate(context: vscode.ExtensionContext, handleLocal: bo
 
   await toggleExtension(configuration.disableExtension, compositionState);
 
-  Logger.debug('Finish.');
+  Logger.info('Finish custom.');
 }
 
 /**
